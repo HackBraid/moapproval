@@ -4,10 +4,13 @@ import com.longfor.bean.*;
 import com.longfor.model.DohalfData;
 import com.longfor.service.DohalfService;
 import com.longfor.service.FlowDataService;
+import com.longfor.util.CommonUtil;
 import com.longfor.util.RedisUtil;
 import com.longfor.util.ResultUtil;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +27,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/flowapi")
 public class FlowController {
+
+    private final static Logger logger= LoggerFactory.getLogger(FlowController.class);
 
     @Autowired
     DohalfService dohalfService;
@@ -62,12 +67,17 @@ public class FlowController {
      */
     @RequestMapping(value = "/business",method = RequestMethod.POST)
     public Result<String> business(@RequestBody @Valid FlowParamBean flowParamBean) throws Exception{
-        String data=redisUtil.get("business_" + flowParamBean.getSystemNo() + "_" + flowParamBean.getFlowNo()+"_"+flowParamBean.getUsercode());
-        if(StringUtils.isNotEmpty(data)){
-            return ResultUtil.success("");
-        }else{
+        try{
+            String data=redisUtil.get("business_" + flowParamBean.getSystemNo() + "_" + flowParamBean.getFlowNo()+"_"+flowParamBean.getUsercode());
+            if(StringUtils.isNotEmpty(data)){
+                return ResultUtil.success("");
+            }else{
+                return ResultUtil.success(flowDataService.findBusiness(flowParamBean.getSystemNo(),flowParamBean.getFlowNo(),flowParamBean.getUsercode()));
+            }
+        }catch (Exception e){
             return ResultUtil.success(flowDataService.findBusiness(flowParamBean.getSystemNo(),flowParamBean.getFlowNo(),flowParamBean.getUsercode()));
         }
+
     }
 
     /**
@@ -75,10 +85,14 @@ public class FlowController {
      */
     @RequestMapping(value = "/flow",method = RequestMethod.POST)
     public Result<String> flow(@RequestBody @Valid FlowParamBean flowParamBean) throws Exception{
-        String data=redisUtil.get("flow_" + flowParamBean.getFlowNo() + "_" + flowParamBean.getSystemNo());
-        if(StringUtils.isNotEmpty(data)){
-            return ResultUtil.success("");
-        }else{
+        try{
+            String data=redisUtil.get("flow_" + flowParamBean.getFlowNo() + "_" + flowParamBean.getSystemNo());
+            if(StringUtils.isNotEmpty(data)){
+                return ResultUtil.success("");
+            }else{
+                return ResultUtil.success(flowDataService.findFlowData(flowParamBean.getFlowNo(),flowParamBean.getSystemNo()));
+            }
+        }catch (Exception e){
             return ResultUtil.success(flowDataService.findFlowData(flowParamBean.getFlowNo(),flowParamBean.getSystemNo()));
         }
     }
@@ -88,8 +102,11 @@ public class FlowController {
      */
     @RequestMapping(value = "/update-flow",method = RequestMethod.POST)
     public Result<String> updateFlow(@RequestBody @Valid ApprovalBean approvalBean) throws Exception{
-        System.out.println(approvalBean.getData());
-        redisUtil.lpush("APPROVAL_QUEUE",approvalBean.getData());
+        try{
+            redisUtil.lpush("APPROVAL_QUEUE", CommonUtil.toJson(approvalBean));
+        }catch (Exception e){
+            logger.info("更新redis异常：APPROVAL_QUEUE"+e.getMessage());
+        }
         dohalfService.updateTodoId(approvalBean.getTodoId());
         return  ResultUtil.success("审批操作成功");
     }

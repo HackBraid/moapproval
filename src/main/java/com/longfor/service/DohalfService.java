@@ -74,6 +74,7 @@ public class DohalfService {
     @Transactional
     public void updateTodoId(String todoId){
         dohalfDataRepository.updateTodoId(todoId);
+        
     }
 
 }
