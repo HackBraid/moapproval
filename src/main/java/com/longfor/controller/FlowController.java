@@ -128,6 +128,9 @@ public class FlowController {
      */
     @RequestMapping(value = "/update-dohalf-status",method = RequestMethod.POST)
     public Result<String> updateDohalfStatus(@RequestBody @Valid ApprovalBean approvalBean) throws Exception{
+        if(approvalBean.getStatus()==null){
+            return  ResultUtil.error(-1,"审批参数不能为空");
+        }
         dohalfService.updateTodoId(approvalBean.getTodoId(),approvalBean.getStatus());
         return  ResultUtil.success("审批操作成功");
     }
