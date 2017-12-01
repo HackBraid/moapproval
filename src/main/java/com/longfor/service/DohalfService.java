@@ -72,9 +72,8 @@ public class DohalfService {
      * @param todoId
      */
     @Transactional
-    public void updateTodoId(String todoId){
-        dohalfDataRepository.updateTodoId(todoId);
-        
+    public void updateTodoId(String todoId,Integer status){
+        dohalfDataRepository.updateTodoId(todoId,status);
     }
 
 }

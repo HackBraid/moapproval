@@ -13,6 +13,7 @@ public class ApprovalBean extends ParamBean{
     private String data;
     private String systemNo;
     private String flowNo;
+    private Integer status;
 
     public String getTodoId() {
         return todoId;
@@ -44,5 +45,15 @@ public class ApprovalBean extends ParamBean{
 
     public void setFlowNo(String flowNo) {
         this.flowNo = flowNo;
+    }
+
+    @Override
+    public Integer getStatus() {
+        return status;
+    }
+
+    @Override
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }

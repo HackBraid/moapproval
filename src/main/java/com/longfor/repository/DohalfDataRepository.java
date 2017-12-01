@@ -13,8 +13,8 @@ import org.springframework.data.repository.query.Param;
  */
 public interface DohalfDataRepository extends JpaRepository<DohalfData,Integer>,JpaSpecificationExecutor<DohalfData> {
 
-    @Query("update DohalfData d set todoStatus=4  where  d.todoId = :todoId ")
+    @Query("update DohalfData d set todoStatus=:todoStatus  where  d.todoId = :todoId ")
     @Modifying
-    Integer updateTodoId(@Param("todoId") String todoId);
+    Integer updateTodoId(@Param("todoId") String todoId,@Param("todoStatus") Integer todoStatus);
 
 }

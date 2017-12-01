@@ -108,9 +108,9 @@ public class FlowController {
     }
 
     /**
-     * 更新状态
+     *  审批操作接口
      */
-    @RequestMapping(value = "/update-flow",method = RequestMethod.POST)
+    @RequestMapping(value = "/approve",method = RequestMethod.POST)
     public Result<String> updateFlow(@RequestBody @Valid ApprovalBean approvalBean) throws Exception{
         try{
             RedisSourceFactory redisSourceFactory=new RedisSourceFactory(redisQuene.getADDR(),redisQuene.getPORT(),redisQuene.getAUTH());
@@ -119,8 +119,18 @@ public class FlowController {
         }catch (Exception e){
             logger.info("更新redis异常：APPROVAL_QUEUE"+e.getMessage());
         }
-        dohalfService.updateTodoId(approvalBean.getTodoId());
+        dohalfService.updateTodoId(approvalBean.getTodoId(),4);
         return  ResultUtil.success("审批操作成功");
     }
+
+    /**
+     *  更新待办状态接口
+     */
+    @RequestMapping(value = "/update-dohalf-status",method = RequestMethod.POST)
+    public Result<String> updateDohalfStatus(@RequestBody @Valid ApprovalBean approvalBean) throws Exception{
+        dohalfService.updateTodoId(approvalBean.getTodoId(),approvalBean.getStatus());
+        return  ResultUtil.success("审批操作成功");
+    }
+
 
 }
