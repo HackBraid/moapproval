@@ -3,12 +3,12 @@ package com.longfor.util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
 import sun.misc.BASE64Decoder;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -26,7 +26,7 @@ public class CommonUtil {
 
     public static ExecutorService getThreadPool(){
         if(CommonUtil.fixedThreadPool==null){
-            CommonUtil.fixedThreadPool = Executors.newFixedThreadPool(10);
+            CommonUtil.fixedThreadPool = Executors.newFixedThreadPool(1);
         }
         return CommonUtil.fixedThreadPool;
     }
@@ -40,25 +40,6 @@ public class CommonUtil {
         GSON = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").serializeNulls().create();
     }
 
-
-    /**
-     * 返回json。
-     *
-     * @param response
-     * @param src
-     */
-    public static void writerJson(HttpServletResponse response, Object src) {
-        response.setCharacterEncoding("utf-8");
-        response.setContentType("text/plain");
-        try {
-            PrintWriter out = response.getWriter();
-            out.write(GSON.toJson(src));
-            out.flush();
-            out.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
     /**
      * 将实体或集合转换成json。
      *
@@ -69,15 +50,16 @@ public class CommonUtil {
         return GSON.toJson(src);
     }
 
+
     /**
      * json转list map
      *
      * @param jsonStr
      * @return
      */
-    public static List<Map<String, String>> parseJSON2List(String jsonStr) throws Exception {
+    public static List<Map<String, Object>> parseJSON2List(String jsonStr) throws Exception {
         JSONArray jsonArr = JSONArray.fromObject(jsonStr);
-        List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         Iterator<JSONObject> it = jsonArr.iterator();
         while (it.hasNext()) {
             JSONObject json2 = it.next();
@@ -92,19 +74,10 @@ public class CommonUtil {
      * @param json
      * @return
      */
-    public static Map<String, String> fromJson(String json) {
-        Map<String, String> jsonMap = null;
+    public static Map<String, Object> fromJson(String json) {
+        Map<String, Object> jsonMap = null;
         json = json.replaceAll("\r", "").replaceAll("\n", "");
-        JSONArray jsonArray = JSONArray.fromObject("[" + json + "]");
-        jsonMap = new HashMap<String, String>();
-        for (int i = 0; i < jsonArray.size(); i++) {
-            JSONObject jsonObject = jsonArray.getJSONObject(i);
-            for (Iterator<?> iter = jsonObject.keys(); iter.hasNext();) {
-                String key = (String) iter.next();
-                String value = jsonObject.get(key).toString();
-                jsonMap.put(key, value);
-            }
-        }
+        jsonMap=new Gson().fromJson(json,new TypeToken<Map<String,Object>>(){}.getType());
         return jsonMap;
     }
 
@@ -216,6 +189,20 @@ public class CommonUtil {
     }
 
     /**
+     * 获取特殊业务类型（PO）
+     *
+     * @param businessType
+     * @return
+     */
+    public static boolean isPoJurisdiction(String businessType) {
+        if ("新增地区招标规划审批".equals(businessType) || "调整集团招标规划审批".equals(businessType) || "新增集团招标规划审批".equals(businessType) || "新增项目招标规划审批".equals(businessType) || "调整项目招标规划审批".equals(businessType) || "调整地区招标规划审批".equals(businessType)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * 将一个base64转换成图片保存在服务器上。
      *
      * @param base64
@@ -236,6 +223,7 @@ public class CommonUtil {
             e.printStackTrace();
         }
     }
+
 
     /**
      * 生成随机名称。
@@ -281,7 +269,7 @@ public class CommonUtil {
             connection.setRequestMethod("POST");
             connection.setUseCaches(false);
             connection.setInstanceFollowRedirects(true);
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
+            connection.setRequestProperty("Content-Type", "application/json;charset=utf-8");
             connection.setConnectTimeout(10000);
             connection.setReadTimeout(30000);
 
@@ -320,28 +308,27 @@ public class CommonUtil {
 
 
     /**
-     * 获取当前系统前一天日期
-     * @param
+     * 龙信发送消息id生成。
+     *
+     * @return
      */
-    public static Date getNextDay(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.add(Calendar.DAY_OF_MONTH, -1);
-        date = calendar.getTime();
-        return date;
-    }
-
-    public static boolean isJson(String jsonStr) {
-        if (null != jsonStr && "" != jsonStr && ((jsonStr.startsWith("{") && jsonStr.endsWith("}")) || (jsonStr.startsWith("[") && jsonStr.endsWith("]")))) {
-            return true;
+    private static int index=0;
+    public static String getMsgId() {
+        String msgid = "";
+        if (index >= 9999) {
+            index = 0;
         }
-        return false;
+        if (index > 9) {
+            msgid = "000" + index;
+        } else if (index > 99) {
+            msgid = "00" + index;
+        } else if (index > 999) {
+            msgid = "0" + index;
+        } else if (index >= 9000 && index <= 9999) {
+            msgid = "" + index;
+        }
+        msgid=new Date().getTime()+msgid;
+        index++;
+        return msgid;
     }
-
-    public static void main(String[] args) {
-        SimpleDateFormat format= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        System.out.println(format.format(getNextDay(new Date())));
-
-    }
-
 }

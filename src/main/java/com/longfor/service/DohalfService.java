@@ -76,4 +76,12 @@ public class DohalfService {
         dohalfDataRepository.updateTodoId(todoId,status);
     }
 
+
+    public DohalfData findByTodoId(String todoId){
+        List<DohalfData> list=dohalfDataRepository.findByTodoId(todoId);
+        if(list!=null && list.size()>0){
+            return list.get(0);
+        }
+        return null;
+    }
 }

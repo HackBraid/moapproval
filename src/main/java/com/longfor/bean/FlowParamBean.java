@@ -10,6 +10,7 @@ public class FlowParamBean extends ParamBean{
     private String systemNo;
     private String flowNo;
     private String usercode;
+    private String todoId;
 
 
     public String getSystemNo() {
@@ -34,5 +35,13 @@ public class FlowParamBean extends ParamBean{
 
     public void setUsercode(String usercode) {
         this.usercode = usercode;
+    }
+
+    public String getTodoId() {
+        return todoId;
+    }
+
+    public void setTodoId(String todoId) {
+        this.todoId = todoId;
     }
 }

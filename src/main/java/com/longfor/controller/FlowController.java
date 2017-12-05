@@ -2,6 +2,7 @@ package com.longfor.controller;
 
 import com.longfor.bean.*;
 import com.longfor.model.DohalfData;
+import com.longfor.service.ApprovalService;
 import com.longfor.service.DohalfService;
 import com.longfor.service.FlowDataService;
 import com.longfor.util.CommonUtil;
@@ -12,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import redis.clients.jedis.Jedis;
 
 import javax.validation.Valid;
+import java.lang.reflect.Method;
 import java.util.List;
 
 /**
@@ -44,6 +47,9 @@ public class FlowController {
 
     @Autowired
     FlowDataService flowDataService;
+
+    @Autowired
+    ApprovalService approvalService;
     /**
      * 获取移动审批列表 status 获取列表的状态0表示代办1表示已办
      */
@@ -119,6 +125,10 @@ public class FlowController {
         }catch (Exception e){
             logger.info("更新redis异常：APPROVAL_QUEUE"+e.getMessage());
         }
+
+
+//        Method method= ReflectionUtils.findMethod(approvalService.getClass(),approvalBean+"_Approval",new Class[]{String.class,DohalfData.class});
+//        String result= (String)ReflectionUtils.invokeMethod(method,approvalService,approvalBean.getData(),dohalfData);
         dohalfService.updateTodoId(approvalBean.getTodoId(),4);
         return  ResultUtil.success("审批操作成功");
     }
@@ -132,5 +142,35 @@ public class FlowController {
         return  ResultUtil.success("审批操作成功");
     }
 
+    /**
+     *  审批操作接口  调用外部接口
+     */
+    @RequestMapping(value = "/approve-interface",method = RequestMethod.POST)
+    public Result<String> approvInterface(@RequestBody @Valid ApprovalBean approvalBean) throws Exception{
+        DohalfData dohalfData= dohalfService.findByTodoId(approvalBean.getTodoId());
+        Method method= ReflectionUtils.findMethod(approvalService.getClass(),approvalBean+"_Approval",new Class[]{String.class,DohalfData.class});
+        String result= (String)ReflectionUtils.invokeMethod(method,approvalService,approvalBean.getData(),dohalfData);
+        return  ResultUtil.success(result);
+    }
+
+    /**
+     * 获取业务详情接口  调用外部接口
+     */
+    @RequestMapping(value = "/business-interface",method = RequestMethod.POST)
+    public Result<String> businessInterface(@RequestBody @Valid FlowParamBean flowParamBean) throws Exception{
+        DohalfData dohalfData= dohalfService.findByTodoId(flowParamBean.getTodoId());
+        Method method= ReflectionUtils.findMethod(this.getClass(),dohalfData.getSystemNo()+"_BusinessInfo",new Class[]{DohalfData.class});
+        String businessJson= (String)ReflectionUtils.invokeMethod(method,this,dohalfData);
+        return  ResultUtil.success(businessJson);
+    }
+
+    /**
+     * 获取流程信息 调用外部接口
+     */
+    @RequestMapping(value = "/flow-interface",method = RequestMethod.POST)
+    public Result<String> flowInterface(@RequestBody @Valid FlowParamBean flowParamBean) throws Exception{
+       String data= flowDataService.getBpmFlowInfo(flowParamBean.getFlowNo(),flowParamBean.getStatus()+"");
+        return  ResultUtil.success(data);
+    }
 
 }

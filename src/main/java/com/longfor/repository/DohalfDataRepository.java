@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 
 /**
  * Created by issuser on 2017/9/28.
@@ -16,5 +18,8 @@ public interface DohalfDataRepository extends JpaRepository<DohalfData,Integer>,
     @Query("update DohalfData d set todoStatus=:todoStatus  where  d.todoId = :todoId ")
     @Modifying
     Integer updateTodoId(@Param("todoId") String todoId,@Param("todoStatus") Integer todoStatus);
+
+
+    List<DohalfData> findByTodoId(String todoId);
 
 }
