@@ -414,7 +414,6 @@ public class ApprovalService {
      * @throws Exception
      */
     public String LONGCITY_Approval(String jsonData,DohalfData dohalfData) throws Exception{
-        System.out.println(jsonData);
         //设置header
         Map<String,Object> mapHeader= new HashMap<String,Object>();
         mapHeader.put("version","v1");
@@ -423,10 +422,9 @@ public class ApprovalService {
         //获取url
         String url=systemUrlService.findBySystemNo("LONGCITY",dohalfData.getBusiness_type()).getString("approvalUrl");
         Object data= HttpUtils.getDataByJson(url,jsonData,mapHeader);
-        System.out.println(data);
         try{
             JSONObject flowInfo=JSONObject.fromObject(data);
-            if("200".equals(flowInfo.get("status"))){
+            if("200".equals(flowInfo.getString("code"))){
                 return flowInfo.get("result").toString();
             }else{
                 throw new Exception(flowInfo.getString("message"));
