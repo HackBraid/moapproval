@@ -419,8 +419,7 @@ public class ApprovalService {
         Map<String,Object> mapHeader= new HashMap<String,Object>();
         mapHeader.put("version","v1");
         mapHeader.put("platform","app");
-        mapHeader.put("token","0246bee409904bada83e59cd5a62161b");
-        mapHeader.put("Content-Type","application/json");
+        mapHeader.put("token","7e2d0ec641474c1985758959825cc1f9de29b2f02be84d90b9a7dc1edf731eba");
         //获取url
         String url=systemUrlService.findBySystemNo("LONGCITY",dohalfData.getBusiness_type()).getString("approvalUrl");
         Object data= HttpUtils.getDataByJson(url,jsonData,mapHeader);
