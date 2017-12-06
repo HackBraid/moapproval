@@ -1,7 +1,9 @@
 package com.longfor.controller;
 
 import com.longfor.bean.*;
+import com.longfor.model.BusinessData;
 import com.longfor.model.DohalfData;
+import com.longfor.model.FlowData;
 import com.longfor.service.ApprovalService;
 import com.longfor.service.BusinessService;
 import com.longfor.service.DohalfService;
@@ -166,7 +168,9 @@ public class FlowController {
         DohalfData dohalfData= dohalfService.findByFlowNoAndSystemNo(flowParamBean.getFlowNo(),flowParamBean.getSystemNo());
         Method method= ReflectionUtils.findMethod(businessService.getClass(),dohalfData.getSystemNo()+"_BusinessInfo",new Class[]{DohalfData.class});
         String businessJson= (String)ReflectionUtils.invokeMethod(method,businessService,dohalfData);
-        return  ResultUtil.success(businessJson);
+        BusinessData businessData=new BusinessData();
+        businessData.setBznsData(businessJson);
+        return  ResultUtil.success(businessData);
     }
 
     /**
@@ -175,7 +179,9 @@ public class FlowController {
     @RequestMapping(value = "/flow-interface",method = RequestMethod.POST)
     public Result<String> flowInterface(@RequestBody @Valid FlowParamBean flowParamBean) throws Exception{
        String data= flowDataService.getBpmFlowInfo(flowParamBean.getFlowNo(),"1");
-        return  ResultUtil.success(data);
+        FlowData flowData=new FlowData();
+        flowData.setFlowData(data);
+        return  ResultUtil.success(flowData);
     }
 
 }

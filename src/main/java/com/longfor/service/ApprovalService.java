@@ -414,23 +414,7 @@ public class ApprovalService {
      * @throws Exception
      */
     public String LONGCITY_Approval(String jsonData,DohalfData dohalfData) throws Exception{
-        // 将json转为map
-//        Map<String,Object> mapData=new HashMap<String,Object>();
-//        mapData.put("instanceId","95d78fc8-6f67-4808-bea7-31e0d9ea99e9");//流程id
-//        mapData.put("workItemId","444");//节点id
-//        mapData.put("toDoId","555");//待办id
-//        mapData.put("commentText","333");//评审意见，专业标识为1时，返回json，为2时直接字符串
-//        mapData.put("operateType","");//操作类型：1、同意，2、有条件通过，3、驳回，4、否决
-//        mapData.put("userCode","liufq");//登录名
-
-        //获取json数据
-        ;
-        String jsonStr = "{instanceId:"+dohalfData.getFlowNo()+"," +
-                "workItemId:"+dohalfData.getRunnote_id()+"," +
-                "toDoId:"+dohalfData.getTodoId()+"," +
-                "commentText:2," +
-                "operateType:"+dohalfData.getTodoStatus()+"," +
-                "userCode:"+dohalfData.getAppvUsername()+"}";
+        System.out.println(jsonData);
         //设置header
         Map<String,Object> mapHeader= new HashMap<String,Object>();
         mapHeader.put("version","v1");
@@ -439,7 +423,8 @@ public class ApprovalService {
         mapHeader.put("Content-Type","application/json");
         //获取url
         String url=systemUrlService.findBySystemNo("LONGCITY",dohalfData.getBusiness_type()).getString("approvalUrl");
-        Object data= HttpUtils.getDataByJson(url,jsonStr,mapHeader);
+        Object data= HttpUtils.getDataByJson(url,jsonData,mapHeader);
+        System.out.println(data);
         try{
             JSONObject flowInfo=JSONObject.fromObject(data);
             if("200".equals(flowInfo.get("status"))){
