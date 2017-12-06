@@ -22,4 +22,6 @@ public interface DohalfDataRepository extends JpaRepository<DohalfData,Integer>,
 
     List<DohalfData> findByTodoId(String todoId);
 
+    List<DohalfData> findByFlowNoAndSystemNo(String flowNo,String systemNo);
+
 }

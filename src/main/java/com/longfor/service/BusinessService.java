@@ -405,7 +405,7 @@ public class BusinessService {
         //获取json数据
         Map<String,Object> mapData= new HashMap<String,Object>();
         mapData.put("instanceId",dohalfData.getFlowNo());
-        mapData.put("userCode",dohalfData.getAppvUsername());
+        mapData.put("userCode",dohalfData.getPubUsername());
         mapData.put("flag","2");
         ObjectMapper jsonMap = new ObjectMapper();
         String jsonStr =jsonMap.writeValueAsString(mapData);

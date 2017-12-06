@@ -84,4 +84,12 @@ public class DohalfService {
         }
         return null;
     }
+
+    public DohalfData findByFlowNoAndSystemNo(String flowNo,String systemNo){
+        List<DohalfData> list=dohalfDataRepository.findByFlowNoAndSystemNo(flowNo,systemNo);
+        if(list!=null && list.size()>0){
+            return list.get(0);
+        }
+        return null;
+    }
 }

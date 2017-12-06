@@ -3,6 +3,7 @@ package com.longfor.controller;
 import com.longfor.bean.*;
 import com.longfor.model.DohalfData;
 import com.longfor.service.ApprovalService;
+import com.longfor.service.BusinessService;
 import com.longfor.service.DohalfService;
 import com.longfor.service.FlowDataService;
 import com.longfor.util.CommonUtil;
@@ -50,6 +51,10 @@ public class FlowController {
 
     @Autowired
     ApprovalService approvalService;
+
+    @Autowired
+    BusinessService businessService;
+
     /**
      * 获取移动审批列表 status 获取列表的状态0表示代办1表示已办
      */
@@ -148,7 +153,7 @@ public class FlowController {
     @RequestMapping(value = "/approve-interface",method = RequestMethod.POST)
     public Result<String> approvInterface(@RequestBody @Valid ApprovalBean approvalBean) throws Exception{
         DohalfData dohalfData= dohalfService.findByTodoId(approvalBean.getTodoId());
-        Method method= ReflectionUtils.findMethod(approvalService.getClass(),approvalBean+"_Approval",new Class[]{String.class,DohalfData.class});
+        Method method= ReflectionUtils.findMethod(approvalService.getClass(),approvalBean.getSystemNo()+"_Approval",new Class[]{String.class,DohalfData.class});
         String result= (String)ReflectionUtils.invokeMethod(method,approvalService,approvalBean.getData(),dohalfData);
         return  ResultUtil.success(result);
     }
@@ -158,9 +163,9 @@ public class FlowController {
      */
     @RequestMapping(value = "/business-interface",method = RequestMethod.POST)
     public Result<String> businessInterface(@RequestBody @Valid FlowParamBean flowParamBean) throws Exception{
-        DohalfData dohalfData= dohalfService.findByTodoId(flowParamBean.getTodoId());
-        Method method= ReflectionUtils.findMethod(this.getClass(),dohalfData.getSystemNo()+"_BusinessInfo",new Class[]{DohalfData.class});
-        String businessJson= (String)ReflectionUtils.invokeMethod(method,this,dohalfData);
+        DohalfData dohalfData= dohalfService.findByFlowNoAndSystemNo(flowParamBean.getFlowNo(),flowParamBean.getSystemNo());
+        Method method= ReflectionUtils.findMethod(businessService.getClass(),dohalfData.getSystemNo()+"_BusinessInfo",new Class[]{DohalfData.class});
+        String businessJson= (String)ReflectionUtils.invokeMethod(method,businessService,dohalfData);
         return  ResultUtil.success(businessJson);
     }
 
@@ -169,7 +174,7 @@ public class FlowController {
      */
     @RequestMapping(value = "/flow-interface",method = RequestMethod.POST)
     public Result<String> flowInterface(@RequestBody @Valid FlowParamBean flowParamBean) throws Exception{
-       String data= flowDataService.getBpmFlowInfo(flowParamBean.getFlowNo(),flowParamBean.getStatus()+"");
+       String data= flowDataService.getBpmFlowInfo(flowParamBean.getFlowNo(),"1");
         return  ResultUtil.success(data);
     }
 
