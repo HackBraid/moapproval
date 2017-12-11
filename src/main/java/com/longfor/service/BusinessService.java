@@ -102,7 +102,11 @@ public class BusinessService {
     public String PLANNING_BusinessInfo(DohalfData dohalfData) throws Exception{
         // 将json转为map
         Map<String,Object> mapData= new HashMap<String,Object>();
-        mapData.put("action","getData");
+        if(dohalfData.getBusiness_type().equals("Dqgsys")){
+            mapData.put("action","getRegionData");
+        }else{
+            mapData.put("action","getData");
+        }
         mapData.put("instanceId",dohalfData.getFlowNo());
         mapData.put("user",dohalfData.getAppvUsername());
         //设置头部信息
