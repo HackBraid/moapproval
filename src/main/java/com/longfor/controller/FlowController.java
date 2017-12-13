@@ -158,8 +158,13 @@ public class FlowController {
 //        Method method= ReflectionUtils.findMethod(approvalService.getClass(),approvalBean.getSystemNo()+"_Approval",new Class[]{String.class,DohalfData.class});
 //        String result= (String)ReflectionUtils.invokeMethod(method,approvalService,approvalBean.getData(),dohalfData);
         String result=interfaceService.getApprove(approvalBean);
-        dohalfService.updateTodoId(dohalfData.getTodoId(),1);
-        return  ResultUtil.success(result);
+        if(StringUtils.isEmpty(result) || "-1".equals(result)){
+            dohalfService.updateTodoId(dohalfData.getTodoId(),1);
+            return  ResultUtil.success(result);
+        }else{
+            return  ResultUtil.error(-1,"");
+        }
+
     }
 
     /**
@@ -183,9 +188,13 @@ public class FlowController {
     public Result<String> flowInterface(@RequestBody @Valid FlowParamBean flowParamBean) throws Exception{
 //       String data= flowDataService.getBpmFlowInfo(flowParamBean.getFlowNo(),"1");
         String result=interfaceService.getFlow(flowParamBean);
-        FlowData flowData=new FlowData();
-        flowData.setFlowData(result);
-        return  ResultUtil.success(flowData);
+        if(StringUtils.isEmpty(result) || "-1".equals(result)){
+            FlowData flowData=new FlowData();
+            flowData.setFlowData(result);
+            return  ResultUtil.success(flowData);
+        }else{
+            return  ResultUtil.error(-1,"");
+        }
     }
 
 }
