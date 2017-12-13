@@ -3,6 +3,7 @@ package com.longfor.service;
 import com.longfor.bean.ApprovalBean;
 import com.longfor.bean.FlowParamBean;
 import com.longfor.util.HttpUtils;
+import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,9 +22,11 @@ public class InterfaceService {
         JSONObject jsonData=new JSONObject();
         jsonData.put("todoId",approvalBean.getTodoId());
         jsonData.put("systemNo",approvalBean.getSystemNo());
-        jsonData.put("data",approvalBean.getData());
+//        JSONObject data1=JSONObject.fromObject(approvalBean.getData());
+//        jsonData.put("data",data1);
         try{
             String data= HttpUtils.getDataByJson(APPROVAL_HANDLE+"approve",jsonData.toString(),null);
+            System.out.println(data);
             JSONObject flowInfo=JSONObject.fromObject(data);
             if("0".equals(flowInfo.getString("code"))){
                 return flowInfo.get("data").toString();
