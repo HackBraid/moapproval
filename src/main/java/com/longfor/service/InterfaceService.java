@@ -2,6 +2,7 @@ package com.longfor.service;
 
 import com.longfor.bean.ApprovalBean;
 import com.longfor.bean.FlowParamBean;
+import com.longfor.util.CommonUtil;
 import com.longfor.util.HttpUtils;
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
@@ -19,13 +20,13 @@ public class InterfaceService {
     private String APPROVAL_HANDLE;
 
     public String getApprove( ApprovalBean approvalBean){
-        JSONObject jsonData=new JSONObject();
-        jsonData.put("todoId",approvalBean.getTodoId());
-        jsonData.put("systemNo",approvalBean.getSystemNo());
+//        JSONObject jsonData=new JSONObject();
+//        jsonData.put("todoId",approvalBean.getTodoId());
+//        jsonData.put("systemNo",approvalBean.getSystemNo());
 //        JSONObject data1=JSONObject.fromObject(approvalBean.getData());
 //        jsonData.put("data",data1);
         try{
-            String data= HttpUtils.getDataByJson(APPROVAL_HANDLE+"approve",jsonData.toString(),null);
+            String data= HttpUtils.getDataByJson(APPROVAL_HANDLE+"approve", CommonUtil.toJson(approvalBean),null);
             System.out.println(data);
             JSONObject flowInfo=JSONObject.fromObject(data);
             if("0".equals(flowInfo.getString("code"))){
