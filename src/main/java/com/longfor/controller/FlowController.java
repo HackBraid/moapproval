@@ -158,12 +158,7 @@ public class FlowController {
 //        Method method= ReflectionUtils.findMethod(approvalService.getClass(),approvalBean.getSystemNo()+"_Approval",new Class[]{String.class,DohalfData.class});
 //        String result= (String)ReflectionUtils.invokeMethod(method,approvalService,approvalBean.getData(),dohalfData);
         String result=interfaceService.getApprove(approvalBean);
-        if(StringUtils.isEmpty(result) || "-1".equals(result)){
-            dohalfService.updateTodoId(dohalfData.getTodoId(),1);
-            return  ResultUtil.success(result);
-        }else{
-            return  ResultUtil.error(-1,"");
-        }
+        return  ResultUtil.success("");
 
     }
 
@@ -176,9 +171,14 @@ public class FlowController {
 //        Method method= ReflectionUtils.findMethod(businessService.getClass(),dohalfData.getSystemNo()+"_BusinessInfo",new Class[]{DohalfData.class});
 //        String businessJson= (String)ReflectionUtils.invokeMethod(method,businessService,dohalfData);
         String result=interfaceService.getBusiness(flowParamBean);
-        BusinessData businessData=new BusinessData();
-        businessData.setBznsData(result);
-        return  ResultUtil.success(businessData);
+        if(StringUtils.isEmpty(result) || "-1".equals(result)){
+            return  ResultUtil.error(-1,"");
+        }else{
+            BusinessData businessData=new BusinessData();
+            businessData.setBznsData(result);
+            return  ResultUtil.success(businessData);
+        }
+
     }
 
     /**
@@ -189,12 +189,13 @@ public class FlowController {
 //       String data= flowDataService.getBpmFlowInfo(flowParamBean.getFlowNo(),"1");
         String result=interfaceService.getFlow(flowParamBean);
         if(StringUtils.isEmpty(result) || "-1".equals(result)){
+            return  ResultUtil.error(-1,"");
+        }else{
             FlowData flowData=new FlowData();
             flowData.setFlowData(result);
             return  ResultUtil.success(flowData);
-        }else{
-            return  ResultUtil.error(-1,"");
         }
     }
+
 
 }
