@@ -124,7 +124,7 @@ public class FlowController {
      *  审批操作接口
      */
     @RequestMapping(value = "/approve",method = RequestMethod.POST)
-    public Result<String> updateFlow(@RequestBody @Valid ApprovalBean approvalBean) throws Exception{
+    public Result<String> updateFlow(@RequestBody @Valid ApprovalBean approvalBean  ) throws Exception{
         try{
             RedisSourceFactory redisSourceFactory=new RedisSourceFactory(redisQuene.getADDR(),redisQuene.getPORT(),redisQuene.getAUTH());
             Jedis jedis=redisSourceFactory.getRedis(redisQuene.getADDR());
@@ -154,7 +154,7 @@ public class FlowController {
      */
     @RequestMapping(value = "/approve-interface",method = RequestMethod.POST)
     public Result<String> approvInterface(@RequestBody @Valid ApprovalBean approvalBean) throws Exception{
-        DohalfData dohalfData= dohalfService.findByTodoId(approvalBean.getTodoId());
+//        DohalfData dohalfData= dohalfService.findByTodoId(approvalBean.getTodoId());
 //        Method method= ReflectionUtils.findMethod(approvalService.getClass(),approvalBean.getSystemNo()+"_Approval",new Class[]{String.class,DohalfData.class});
 //        String result= (String)ReflectionUtils.invokeMethod(method,approvalService,approvalBean.getData(),dohalfData);
         String result=interfaceService.getApprove(approvalBean);
