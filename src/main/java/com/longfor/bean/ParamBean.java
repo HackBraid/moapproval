@@ -11,14 +11,6 @@ public class ParamBean {
 
     private Integer pageSize=10;
 
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
     public Integer getPage() {
         return page;
     }
