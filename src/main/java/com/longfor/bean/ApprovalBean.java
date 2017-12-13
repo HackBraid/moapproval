@@ -47,12 +47,10 @@ public class ApprovalBean extends ParamBean{
         this.flowNo = flowNo;
     }
 
-    @Override
     public Integer getStatus() {
         return status;
     }
 
-    @Override
     public void setStatus(Integer status) {
         this.status = status;
     }
