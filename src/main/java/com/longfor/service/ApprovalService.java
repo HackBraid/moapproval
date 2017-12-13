@@ -66,8 +66,8 @@ public class ApprovalService {
         //获取返回接口详情
         String data= HttpUtils.getData(url,mapData,mapHeader);
         try{
-            Map<String,Object> businessInfo= CommonUtil.fromJson(data);
-            if("0".equals(businessInfo.get("code"))){
+            Map<String,Object> businessInfo= JSONObject.fromObject(data);
+            if("0".equals(businessInfo.get("code").toString())){
                 return businessInfo.get("data").toString();
             }else{
                 throw new Exception(businessInfo.get("msg").toString());
@@ -422,6 +422,7 @@ public class ApprovalService {
         //获取url
         String url=systemUrlService.findBySystemNo("LONGCITY",dohalfData.getBusiness_type()).getString("approvalUrl");
         Object data= HttpUtils.getDataByJson(url,jsonData,mapHeader);
+
         try{
             JSONObject flowInfo=JSONObject.fromObject(data);
             if("200".equals(flowInfo.getString("code"))){

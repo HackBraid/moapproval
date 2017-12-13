@@ -64,8 +64,10 @@ public class HttpUtils {
             entity.setContentEncoding("UTF-8");
             entity.setContentType("application/json");
             //设置头部
-            for (Entry<String, Object> entry : mapHeader.entrySet()) {
-                post.setHeader(entry.getKey(), entry.getValue().toString());
+            if(mapHeader!=null){
+                for (Entry<String, Object> entry : mapHeader.entrySet()) {
+                    post.setHeader(entry.getKey(), entry.getValue().toString());
+                }
             }
             post.setEntity(entity);
             HttpResponse response = httpclient.execute(post);
