@@ -158,7 +158,13 @@ public class FlowController {
 //        Method method= ReflectionUtils.findMethod(approvalService.getClass(),approvalBean.getSystemNo()+"_Approval",new Class[]{String.class,DohalfData.class});
 //        String result= (String)ReflectionUtils.invokeMethod(method,approvalService,approvalBean.getData(),dohalfData);
         String result=interfaceService.getApprove(approvalBean);
-        return  ResultUtil.success("");
+        if(StringUtils.isEmpty(result) || "-1".equals(result)){
+            return  ResultUtil.error(-1,"");
+        }else{
+            return  ResultUtil.success(result);
+
+        }
+
 
     }
 

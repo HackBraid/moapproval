@@ -27,7 +27,6 @@ public class InterfaceService {
 //        jsonData.put("data",data1);
         try{
             String data= HttpUtils.getDataByJson(APPROVAL_HANDLE+"approve", CommonUtil.toJson(approvalBean),null);
-            System.out.println(data);
             JSONObject flowInfo=JSONObject.fromObject(data);
             if("0".equals(flowInfo.getString("code"))){
                 return flowInfo.get("data").toString();
