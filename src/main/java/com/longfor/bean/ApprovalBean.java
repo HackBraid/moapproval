@@ -6,7 +6,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 /**
  * Created by issuser on 2017/11/2.
  */
-public class ApprovalBean{
+public class ApprovalBean {
 
     @NotEmpty(message="todoId不能为空")//字符串不为''
     private String todoId;
@@ -58,14 +58,5 @@ public class ApprovalBean{
         this.status = status;
     }
 
-    //
-//    @Override
-//    public Integer getStatus() {
-//        return status;
-//    }
-//
-//    @Override
-//    public void setStatus(Integer status) {
-//        this.status = status;
-//    }
+
 }

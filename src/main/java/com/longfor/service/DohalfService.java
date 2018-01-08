@@ -1,8 +1,8 @@
 package com.longfor.service;
 
-import com.longfor.bean.DohalfParamBean;
-import com.longfor.model.DohalfData;
-import com.longfor.repository.DohalfDataRepository;
+import com.longfor.bean.SysWorkitemcenterBean;
+import com.longfor.model.SysWorkitemcenterEntity;
+import com.longfor.repository.SysWorkitemcenterDataRepository;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,8 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,71 +23,43 @@ import java.util.List;
 public class DohalfService {
 
     @Autowired
-    DohalfDataRepository dohalfDataRepository;
+    SysWorkitemcenterDataRepository sysWorkitemcenterDataRepository;
 
-    /**
-     * 分页查询已办代办列表
-     * @param dohalfParamBean
-     * @return
-     */
-    public Page<DohalfData> findList(DohalfParamBean dohalfParamBean){
+    public Page<SysWorkitemcenterEntity> findList(SysWorkitemcenterBean sysWorkitemcenterBean){
         List<Sort.Order> orders=new ArrayList<Sort.Order>();
-        orders.add(new Sort.Order(Sort.Direction.DESC, "otherStatus"));
-        orders.add(new Sort.Order( Sort.Direction.DESC, "updateDate"));
-        Pageable pageable = new PageRequest(dohalfParamBean.getPage(), dohalfParamBean.getPageSize(), new Sort(orders));
-        Page<DohalfData> goodsPage=dohalfDataRepository.findAll(new Specification<DohalfData>(){
-            public Predicate toPredicate(Root<DohalfData> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+        orders.add(new Sort.Order(Sort.Direction.DESC, "createdtime"));
+        Pageable pageable = new PageRequest(sysWorkitemcenterBean.getPage(), sysWorkitemcenterBean.getPageSize(), new Sort(orders));
+
+        Page<SysWorkitemcenterEntity> goodsPage=sysWorkitemcenterDataRepository.findAll(new Specification<SysWorkitemcenterEntity>(){
+            public Predicate toPredicate(Root<SysWorkitemcenterEntity> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
                 List<Predicate> list = new ArrayList<Predicate>();
-                List<Integer> listStatus=new ArrayList<Integer>();
-                //0和5表示代办  1和4 表示已办
-                if(dohalfParamBean.getStatus()==0){
-                    listStatus.add(0);
-                    listStatus.add(5);
-                }else if(dohalfParamBean.getStatus()==1){
-                    listStatus.add(1);
-                    listStatus.add(4);
+                list.add(criteriaBuilder.like(root.get("participantcode").as(String.class), "%"+sysWorkitemcenterBean.getParticipantcode()+"%"));
+
+                if (StringUtils.isNotEmpty(sysWorkitemcenterBean.getWorkitemname())){
+                    list.add(criteriaBuilder.like(root.get("workitemname").as(String.class), "%"+sysWorkitemcenterBean.getWorkitemname()+"%"));
                 }
-                if(listStatus.size()>0){
-                    Expression<Integer> exp = root.get("todoStatus");
-                    list.add(exp.in(listStatus));
+
+                if (StringUtils.isNotEmpty(sysWorkitemcenterBean.getOrderid())){
+                    list.add(criteriaBuilder.like(root.get("orderid").as(String.class), "%"+sysWorkitemcenterBean.getOrderid()+"%"));
                 }
-                list.add(criteriaBuilder.equal(root.get("appvUsername").as(String.class), dohalfParamBean.getUsername()));
-                list.add(criteriaBuilder.equal(root.get("todo_type").as(Integer.class), 0));
-                list.add(criteriaBuilder.isNull(root.get("slideDel").as(Integer.class)));
-                list.add(criteriaBuilder.isNull(root.get("logicDel").as(Integer.class)));
-                if(StringUtils.isNotEmpty(dohalfParamBean.getSearchType())){
-                    list.add(criteriaBuilder.like(root.get("title").as(String.class), "%"+dohalfParamBean.getSearchType()+"%"));
+
+                if (StringUtils.isNotEmpty(sysWorkitemcenterBean.getOriginatorname())){
+                    list.add(criteriaBuilder.like(root.get("originatorname").as(String.class), "%"+sysWorkitemcenterBean.getOriginatorname()+"%"));
                 }
+
+                if (StringUtils.isNotEmpty(sysWorkitemcenterBean.getOriginator())){
+                    list.add(criteriaBuilder.like(root.get("originator").as(String.class), "%"+sysWorkitemcenterBean.getOriginator()+"%"));
+                }
+
+                if (sysWorkitemcenterBean.getStatus() != null){
+                    Expression<Integer> exp = root.get("status");
+                    list.add(exp.in(sysWorkitemcenterBean.getStatus()));
+                }
+
                 Predicate[] p = new Predicate[list.size()];
                 return criteriaBuilder.and(list.toArray(p));
             }
         },pageable);
         return goodsPage;
-    }
-
-    /**
-     * 更新审批状态
-     * @param todoId
-     */
-    @Transactional
-    public void updateTodoId(String todoId,Integer status){
-        dohalfDataRepository.updateTodoId(todoId,status);
-    }
-
-
-    public DohalfData findByTodoId(String todoId){
-        List<DohalfData> list=dohalfDataRepository.findByTodoId(todoId);
-        if(list!=null && list.size()>0){
-            return list.get(0);
-        }
-        return null;
-    }
-
-    public DohalfData findByFlowNoAndSystemNo(String flowNo,String systemNo){
-        List<DohalfData> list=dohalfDataRepository.findByFlowNoAndSystemNo(flowNo,systemNo);
-        if(list!=null && list.size()>0){
-            return list.get(0);
-        }
-        return null;
     }
 }
